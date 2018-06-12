@@ -13,8 +13,16 @@ class TweetCrawler:
         self.api = tweepy.API(auth)
         self.db = MongoDB()
 
-    def crawl_tweets(self):
-        pass
+    def crawl_tweets(self, tracks=None):
+        '''Implements the core logic for crawling a stream of tweets.'''
+        
+        # initialize a stream object to connect with Twitter's Streaming API
+        main_listener = StdOutListener()
+        main_stream = tweepy.Stream(auth=self.auth, listener=main_listener)
+        
+        # start tracking tweets containing the requested terms, if any
+        tracks = tracks or ['python']
+        main_stream.filter(track=tracks)
 
 def main():
     # retrieve the crawler's configuration options
