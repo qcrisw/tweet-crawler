@@ -4,7 +4,7 @@ def get_full_text(status):
     
     # original tweet, > 140 characters
     if 'extended_tweet' in data:
-        print(data['extended_tweet']['full_text'])
+        return data['extended_tweet']['full_text']
         
     # retweeted tweet...
     elif 'retweeted_status' in data:
@@ -12,12 +12,12 @@ def get_full_text(status):
 
         # ... > 140 characters
         if 'extended_tweet' in data:
-            print(data['extended_tweet']['full_text'])
+            return data['extended_tweet']['full_text']
 
         # ... <= 140 characters
         else:
-            print(data['text'])
+            return data['text']
 
     # original tweet, <= 140 characters
     else:
-        print(data['text'])
+        return data['text']

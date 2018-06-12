@@ -1,10 +1,15 @@
+import sys
+
 from tweepy import StreamListener
 from databases import MongoDB
 
-class StdOutListener(StreamListener):
+from utils import get_full_text
 
+class StdOutListener(StreamListener):
+    
     def on_status(self, status):
-        print(status.text)
+        print(get_full_text(status))
+        print('-' * 80)
 
 class MongoDBListener(StreamListener):
 
