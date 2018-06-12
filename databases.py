@@ -8,4 +8,4 @@ class MongoDB:
         self.collection = self.db[collection]
 
     def add_tweet(self, status):
-        pass
+        self.collection.insert_one(status._json)
