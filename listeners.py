@@ -13,9 +13,14 @@ class StdOutListener(StreamListener):
 
 class MongoDBListener(StreamListener):
 
-    def __init__(self):
+    def __init__(self, verbose=False):
         super().__init__()
         self.driver = MongoDB()
+        self.verbose = verbose
 
     def on_status(self, status):
         self.driver.add_tweet(status)
+        
+        if self.verbose:
+            print(get_full_text(status))
+            print('-' * 80)
