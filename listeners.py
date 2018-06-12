@@ -1,8 +1,11 @@
 from tweepy import StreamListener
+from pymongo import MongoClient
 
 class StdOutListener(StreamListener):
 
-    pass
+    def on_status(self, status):
+
+        print(status.text)
 
 class MongoDBListener(StreamListener):
 
