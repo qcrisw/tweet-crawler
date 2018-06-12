@@ -1,4 +1,5 @@
 import json
+import sys
 
 import tweepy
 import pymongo
@@ -35,7 +36,7 @@ def main():
 
     # create and run the tweet crawler
     crawler = TweetCrawler(auth)
-    crawler.crawl_tweets()
+    crawler.crawl_tweets(sys.argv[1:])
 
 if __name__ == '__main__':
     main()
