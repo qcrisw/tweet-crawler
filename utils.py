@@ -5,19 +5,13 @@ def get_full_text(status):
     # original tweet, > 140 characters
     if 'extended_tweet' in data:
         return data['extended_tweet']['full_text']
-        
-    # retweeted tweet...
-    elif 'retweeted_status' in data:
-        data = data['retweeted_status']
-
-        # ... > 140 characters
-        if 'extended_tweet' in data:
-            return data['extended_tweet']['full_text']
-
-        # ... <= 140 characters
-        else:
-            return data['text']
-
+    
     # original tweet, <= 140 characters
     else:
         return data['text']
+
+def is_retweet(status):
+    '''Given a tweepy Status object, returns whether or not it's a retweet'''
+    data = status._json
+
+    return 'retweeted_status' in data

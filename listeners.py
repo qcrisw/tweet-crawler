@@ -3,13 +3,14 @@ import sys
 from tweepy import StreamListener
 from databases import MongoDB
 
-from utils import get_full_text
+from utils import get_full_text, is_retweet
 
 class StdOutListener(StreamListener):
     
     def on_status(self, status):
-        print(get_full_text(status))
-        print('-' * 80)
+        if (not is_retweet(status)):
+            print(get_full_text(status))
+            print('-' * 80)
 
 class MongoDBListener(StreamListener):
 
@@ -17,10 +18,12 @@ class MongoDBListener(StreamListener):
         super().__init__()
         self.driver = MongoDB()
         self.verbose = verbose
-
+    
     def on_status(self, status):
-        self.driver.add_tweet(status)
-        
-        if self.verbose:
-            print(get_full_text(status))
-            print('-' * 80)
+        if not is_retweet(status):
+            self.driver.add_tweet(status)
+            
+            if self.verbose:
+                print(get_full_text(status))
+                print('-' * 80)
+    
