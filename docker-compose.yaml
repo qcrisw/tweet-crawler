@@ -2,11 +2,19 @@ version: '3.5'
 services:
   mongo:
     image: mongo:latest
+    volumes:
+      - mongodata:/data/db
+    ports:
+      - '27017:27017'
   pycrawler:
     build: .
     environment:
       - MONGO_URL=mongodb://mongo:27017/social_analytics
     env_file:
       - .env
+    volumes:
+      - $PWD:/home
     depends_on:
       - mongo
+volumes:
+  mongodata:
