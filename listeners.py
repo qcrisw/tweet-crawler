@@ -1,4 +1,5 @@
 import sys
+import os
 
 from tweepy import StreamListener
 from databases import MongoDB
@@ -16,7 +17,7 @@ class MongoDBListener(StreamListener):
 
     def __init__(self, verbose=False):
         super().__init__()
-        self.driver = MongoDB()
+        self.driver = MongoDB(os.environ['MONGO_URL'])
         self.verbose = verbose
     
     def on_status(self, status):

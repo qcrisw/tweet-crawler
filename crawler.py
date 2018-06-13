@@ -1,5 +1,6 @@
 import json
 import sys
+import os
 
 import tweepy
 import pymongo
@@ -23,12 +24,20 @@ class TweetCrawler:
         
         # start tracking tweets containing the requested terms, if any
         tracks = tracks or ['python']
+        # TODO raise an exception if no track, or stream everything
         main_stream.filter(track=tracks)
 
 def main():
     # retrieve the crawler's configuration options
-    with open('config.json') as f:
-        config = json.load(f)
+    config = {
+        "consumer_key": os.environ['TWITTER_CONSUMER_KEY'],
+        "consumer_secret": os.environ['TWITTER_CONSUMER_SECRET'],
+        "access_token": os.environ['TWITTER_ACCESS_TOKEN'],
+        "access_token_secret": os.environ['TWITTER_ACCESS_TOKEN_SECRET']
+    }
+
+    # TODO raise exception if any of the above are not defined
+    # TODO encapsulate config json in a new config.py
 
     # authenticate the crawler to access the Twitter API
     auth = tweepy.OAuthHandler(config['consumer_key'], config['consumer_secret'])
@@ -36,7 +45,10 @@ def main():
 
     # create and run the tweet crawler
     crawler = TweetCrawler(auth)
-    crawler.crawl_tweets(sys.argv[1:])
+    filter = sys.argv[1:]
+    print("Listening for Twitter stream on '{}'...".format(filter))
+    sys.stdout.flush()
+    crawler.crawl_tweets(filter)
 
 if __name__ == '__main__':
     main()
