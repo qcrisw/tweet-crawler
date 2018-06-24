@@ -11,7 +11,7 @@ Building and running Tweet Crawler on your machine should be a pretty straightfo
 
 Making use of Docker (and Docker Compose) greatly simplifies the Tweet Crawler setup process and will make it easier for you to run this program on the platform of your choice.
 
-If you already have up-to-date versions of these programs, feel free to skip straight to the **Install and Run** section.
+If you already have up-to-date versions of these programs, feel free to skip straight to the [Configuration](https://github.com/qcrisw/tweet-crawler/#configuration) section.
 
 ### Prerequisites
 
@@ -19,7 +19,7 @@ We've included links below to installation instructions for Docker Community Edi
 
 Furthermore, we've also included instructions to configure the Twitter access credentials for Tweet Crawler.
 
-After following these instructions, you will be able to directly run the commands in the **Install and Run** section.
+After following these instructions, you will be able to directly run the commands in the [Install and Run](https://github.com/qcrisw/tweet-crawler/#install-and-run) section.
 
 #### Windows
 
@@ -39,7 +39,7 @@ After following these instructions, you will be able to directly run the command
  4. Follow the instructions under the [Install Compose](https://docs.docker.com/compose/install/#install-compose) section
  5. Follow the Linux [post-install instructions](https://docs.docker.com/install/linux/linux-postinstall/)
 
-#### Configuration
+### Configuration
 
 Before you can start using Tweet Crawler, you need to supply the script with credentials to access the Twitter API.
 
