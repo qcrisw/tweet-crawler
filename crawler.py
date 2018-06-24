@@ -22,9 +22,10 @@ class TweetCrawler:
         main_listener = MongoDBListener(verbose=True)
         main_stream = tweepy.Stream(auth=self.auth, listener=main_listener)
         
-        # start tracking tweets containing the requested terms, if any
-        tracks = tracks or ['python']
-        # TODO raise an exception if no track, or stream everything
+        # raise an exception if no track was specified
+        if tracks is None or len(tracks) == 0:
+            raise RuntimeError('You MUST specify at least one streaming track')
+        
         main_stream.filter(track=tracks)
 
 def main():
