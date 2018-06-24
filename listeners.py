@@ -13,6 +13,16 @@ class StdOutListener(StreamListener):
             print(get_full_text(status))
             print('-' * 80)
 
+    def on_error(self, status_code):
+        # apply built-in retry mechanism ("exponential backoff"),
+        # to handle specific Twitter API errors
+        # (https://developer.twitter.com/en/docs/basics/response-codes.html)
+        
+        if status_code in [420, 429]:
+            return True
+        
+        return False
+
 class MongoDBListener(StreamListener):
 
     def __init__(self, verbose=False):
@@ -27,4 +37,13 @@ class MongoDBListener(StreamListener):
             if self.verbose:
                 print(get_full_text(status))
                 print('-' * 80)
-    
+
+    def on_error(self, status_code):
+        # apply built-in retry mechanism ("exponential backoff"),
+        # to handle specific Twitter API errors
+        # (https://developer.twitter.com/en/docs/basics/response-codes.html)
+        
+        if status_code in [420, 429]:
+            return True
+        
+        return False
