@@ -37,7 +37,11 @@ def main():
         "access_token_secret": os.environ['TWITTER_ACCESS_TOKEN_SECRET']
     }
 
-    # TODO raise exception if any of the above are not defined
+    # raise exception if any of the above are not defined
+    for key in config:
+        if config[key] == '':
+            raise RuntimeError('Key', '"{}"'.format(key), 'has not been set')
+    
     # TODO encapsulate config json in a new config.py
 
     # authenticate the crawler to access the Twitter API
