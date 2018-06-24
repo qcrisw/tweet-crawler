@@ -38,7 +38,12 @@ def main():
     filter = sys.argv[1:]
     print("Listening for Twitter stream on '{}'...".format(filter))
     sys.stdout.flush()
-    crawler.crawl_tweets(filter)
+
+    # gracefully handle Ctrl^C exit from tweet crawling process
+    try:
+        crawler.crawl_tweets(filter)
+    except KeyboardInterrupt:
+        print('\nStopped tweet crawler for tracks: {}'.format(filter))
 
 if __name__ == '__main__':
     main()
