@@ -1,5 +1,6 @@
 import json
 import sys
+from urllib3.exceptions import ProtocolError
 
 import tweepy
 import pymongo
@@ -20,18 +21,29 @@ class TweetCrawler:
         
         # initialize a stream object to connect with Twitter's Streaming API
         main_listener = MongoDBListener(verbose=True)
-        main_stream = tweepy.Stream(auth=self.auth, listener=main_listener)
         
         # raise an exception if no track was specified
         if tracks is None or len(tracks) == 0:
             raise RuntimeError('You MUST specify at least one streaming track')
-        
-        main_stream.filter(track=tracks)
+
+        # automatically re-connect tweet crawler whenever it stalls
+        while True:
+            try:
+                # open up a SYNCHRONOUS connection to Twitter Streaming API
+                main_stream = tweepy.Stream(auth=self.auth,
+                                            listener=main_listener)
+                main_stream.filter(track=tracks)
+            except ProtocolError:
+                # the client is beginning to stall, so re-connect it
+                continue
 
 def main():
     # authenticate the crawler to access the Twitter API
-    auth = tweepy.OAuthHandler(config['consumer_key'], config['consumer_secret'])
-    auth.set_access_token(config['access_token'], config['access_token_secret'])
+    auth = tweepy.OAuthHandler(config['consumer_key'],
+                               config['consumer_secret'])
+    
+    auth.set_access_token(config['access_token'],
+                          config['access_token_secret'])
 
     # create and run the tweet crawler
     crawler = TweetCrawler(auth)
