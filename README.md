@@ -43,7 +43,7 @@ After following these instructions, you will be able to directly run the command
 
 Before you can start using Tweet Crawler, you need to supply the script with credentials to access the Twitter API.
 
-To setup these credentials, follow the [instructions here](http://docs.inboundnow.com/guide/create-twitter-application/).
+To setup these credentials, follow the [instructions here](https://www.slickremix.com/docs/how-to-get-api-keys-and-tokens-for-twitter/).
 
 Once you've got these in hand, run the following command:
 
