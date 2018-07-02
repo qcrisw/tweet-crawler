@@ -1,0 +1,20 @@
+# ROI bounding boxes calculated using https://boundingbox.klokantech.com/
+
+## Middle East (incl. Turkey & Iran) ##
+
+# Iran, Saudi Arabia (partial), Iraq (partial), Kuwait, Qatar, UAE, Oman, Yemen, Bahrain
+42.50 12.60 61.83 38.44
+
+# Saudi Arabia (partial), Iraq (partial), Syria, Jordan, Lebanon, Turkey, Cyprus, Israel, Palestine, Egypt
+24.65 21.58 44.52 41.87
+
+## Middle East (excl. Turkey & Iran) (mostly) ##
+
+# Jordan, Lebanon, Israel, Palestine, Syria, Iraq
+34.11 28.96 48.12 36.84
+
+# Egypt, Israel (partial), Palestine (partial), Jordan (partial), Kuwait, Saudi Arabia (partial)
+24.48 21.66 48.82 31.77
+
+# Saudi Arabia (partial), Bahrain, Qatar, UAE, Oman, Yemen
+40.08 12.77 60.07 26.94
