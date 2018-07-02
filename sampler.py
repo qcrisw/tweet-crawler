@@ -24,7 +24,7 @@ class TweetSampler:
                 main_stream = tweepy.Stream(auth=self.auth, listener=main_listener)
 
                 # start crawling a random sample of *all* tweets (BLOCKING call!)
-                main_stream.sample(languages=['ar'])
+                main_stream.sample()
 
             except ProtocolError:
                 #print('\nSampler thread is stalling! Starting new tweet sampler...\n')
