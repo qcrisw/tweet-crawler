@@ -47,7 +47,7 @@ def main():
 
     # create and run the tweet crawler
     crawler = TweetCrawler(auth)
-    locations = sys.argv[1:]
+    locations = list(map(float, sys.argv[1:]))
     print("Listening for Tweets within bounding box: {}...".format(locations))
     sys.stdout.flush()
 
