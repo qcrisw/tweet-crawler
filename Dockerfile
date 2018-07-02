@@ -10,4 +10,4 @@ RUN pip3 install -r requirements.txt
 # copy the rest of the source
 COPY / /home
 
-ENTRYPOINT ["python3", "crawler.py"]
+ENTRYPOINT ["python3", "sampler.py"]
