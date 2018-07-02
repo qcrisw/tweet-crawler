@@ -6,7 +6,7 @@ services:
       - mongodata:/data/db
     ports:
       - '27017:27017'
-  pycrawler:
+  geocrawler:
     build: .
     environment:
       - MONGO_URL=mongodb://mongo:27017/social_analytics
