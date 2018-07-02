@@ -16,15 +16,15 @@ class TweetCrawler:
         self.api = tweepy.API(auth)
         self.db = MongoDB()
 
-    def crawl_tweets(self, tracks=None):
+    def crawl_tweets(self, locations=None):
         '''Implements the core logic for crawling a stream of tweets.'''
         
         # initialize a stream object to connect with Twitter's Streaming API
-        main_listener = MongoDBListener(verbose=True)
+        main_listener = StdOutListener()
         
         # raise an exception if no track was specified
-        if tracks is None or len(tracks) == 0:
-            raise RuntimeError('You MUST specify at least one streaming track')
+        if locations is None or len(locations) == 0:
+            raise RuntimeError('You MUST specify at least one valid bounding box')
 
         # automatically re-connect tweet crawler whenever it stalls
         while True:
@@ -32,7 +32,7 @@ class TweetCrawler:
                 # open up a SYNCHRONOUS connection to Twitter Streaming API
                 main_stream = tweepy.Stream(auth=self.auth,
                                             listener=main_listener)
-                main_stream.filter(track=tracks)
+                main_stream.filter(locations=locations)
             except ProtocolError:
                 # the client is beginning to stall, so re-connect it
                 continue
@@ -47,15 +47,15 @@ def main():
 
     # create and run the tweet crawler
     crawler = TweetCrawler(auth)
-    filter = sys.argv[1:]
-    print("Listening for Twitter stream on '{}'...".format(filter))
+    locations = sys.argv[1:]
+    print("Listening for Tweets within bounding box: {}...".format(locations))
     sys.stdout.flush()
 
     # gracefully handle Ctrl^C exit from tweet crawling process
     try:
-        crawler.crawl_tweets(filter)
+        crawler.crawl_tweets(locations)
     except KeyboardInterrupt:
-        print('\nStopped tweet crawler for tracks: {}'.format(filter))
+        print('\nStopped tweet crawler for bounding box: {}'.format(locations))
 
 if __name__ == '__main__':
     main()
