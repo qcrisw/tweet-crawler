@@ -1,4 +1,5 @@
 from pymongo import MongoClient
+from pymongo.errors import BulkWriteError
 
 from utils import expand_tweet
 
@@ -21,5 +22,10 @@ class MongoDB:
         for tweet in tweets:
             expand_tweet(tweet)
             tweet_json.append(tweet._json)
-
-        self.collection.insert_many(tweet_json, ordered=False)
+        
+        # try to insert each tweet contained in tweet_json into MongoDB
+        # Note: Any attempt to insert duplicate tweet IDs is ignored
+        try:
+            self.collection.insert_many(tweet_json, ordered=False)
+        except BulkWriteError:
+            pass
