@@ -9,9 +9,11 @@ from utils import get_full_text, is_retweet
 class StdOutListener(StreamListener):
     
     def on_status(self, status):
-        if (not is_retweet(status)):
+        if not is_retweet(status):
             print(get_full_text(status))
             print('-' * 80)
+        else:
+            print(status._json['text'])
 
     def on_error(self, status_code):
         # apply built-in retry mechanism ("exponential backoff"),
@@ -35,17 +37,19 @@ class MongoDBListener(StreamListener):
         self.batch_size = batch_size
     
     def on_status(self, status):
-        if not is_retweet(status):
-            self.batch.append(status)
-
-            # once the batch is large enough, dump batched tweets to MongoDB
-            if len(self.batch) == self.batch_size:
-                self.driver.add_tweets(self.batch)
-                self.batch.clear()
-                
-            if self.verbose:
+        self.batch.append(status)
+        
+        # once the batch is large enough, dump batched tweets to MongoDB
+        if len(self.batch) == self.batch_size:
+            self.driver.add_tweets(self.batch)
+            self.batch.clear()
+        
+        if self.verbose:
+            if not is_retweet(status):
                 print(get_full_text(status))
-                print('-' * 80)
+            else:
+                print(status._json['text'])
+            print('-' * 80)
 
     def on_error(self, status_code):
         # apply built-in retry mechanism ("exponential backoff"),

@@ -11,12 +11,13 @@ class MongoDB:
         self.collection = db['tweets']
 
     def add_tweet(self, status):
-        # expand text of tweet to retrieve full tweet body
+        # add "full_tweet" field to status object
         expand_tweet(status)
         self.collection.insert_one(status._json)
 
     def add_tweets(self, tweets):
-        # expand each tweet and store its JSON in MongoDB
+        # add "full_tweet" field to each tweet object
+        # and store its JSON in MongoDB
         tweet_json = []
         
         for tweet in tweets:
