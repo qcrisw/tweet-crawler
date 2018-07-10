@@ -83,6 +83,7 @@ celerybeat-schedule
 
 # Environments
 .env
+.env~
 .venv
 env/
 venv/
@@ -103,5 +104,5 @@ venv.bak/
 # mypy
 .mypy_cache/
 
-# ignore config files
-config.json
+# ignore proxying document
+.proxy_record.ods
