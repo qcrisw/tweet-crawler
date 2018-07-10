@@ -22,7 +22,7 @@ class TweetCrawler:
         # create a listener to consume tweets from Twitter's Streaming API
         main_listener = MongoDBListener(verbose=True)
         
-        # raise an exception if no track was specified
+        # raise an exception if no locations were specified
         if locations is None or len(locations) == 0:
             raise RuntimeError('You MUST specify at least one valid bounding box')
 
@@ -32,6 +32,16 @@ class TweetCrawler:
                 # open up a SYNCHRONOUS connection to Twitter Streaming API
                 main_stream = tweepy.Stream(auth=self.auth,
                                             listener=main_listener)
+
+                # connect to an IP proxy, if specified in the environment
+                proxy_ip = config.get('proxy_server')
+                if proxy_ip:
+                    main_stream.proxies = {
+                        'http': proxy_ip,
+                        'https': proxy_ip
+                    }
+
+                # start up the "filter" streaming crawler
                 main_stream.filter(locations=locations)
             except ProtocolError:
                 # the client is beginning to stall, so re-connect it
@@ -48,6 +58,7 @@ def main():
     # create and run the tweet crawler
     crawler = TweetCrawler(auth)
     locations = list(map(float, sys.argv[1:]))
+    print('Using proxy server at {}'.format(config.get('proxy_server')))
     print("Listening for Tweets within bounding box: {}...".format(locations))
     sys.stdout.flush()
 

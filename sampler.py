@@ -23,7 +23,16 @@ class TweetSampler:
         while True:
             
             try:
+                # create a stream object to connect with Twitter's Streaming API
                 main_stream = tweepy.Stream(auth=self.auth, listener=main_listener)
+
+                # connect to an IP proxy, if specified in the environment
+                proxy_ip = config.get('proxy_server')
+                if proxy_ip:
+                    main_stream.proxies = {
+                        'http': proxy_ip,
+                        'https': proxy_ip
+                    }
 
                 # start crawling all tweets in the given language(s)
                 # NOTE: This is a BLOCKING call!
@@ -44,6 +53,7 @@ def main():
     # create and run the tweet sampler for the given languages
     sampler = TweetSampler(auth)
     langs = sys.argv[1:]
+    print('Using proxy server at {}'.format(config.get('proxy_server')))
     print('Listening for random sample of tweets in languages: {}'.format(langs), flush=True)
 
     # gracefully handle Ctrl^C exit from tweet sampling process
