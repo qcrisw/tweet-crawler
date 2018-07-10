@@ -3,7 +3,7 @@ services:
   mongo:
     image: mongo:latest
     volumes:
-      - mongodata:/data/db
+      - /mnt/data/db:/data/db
     ports:
       - '27017:27017'
   pycrawler:
