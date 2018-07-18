@@ -7,33 +7,7 @@ services:
     ports:
       - '27017:27017'
   pycrawler:
-    build:
-      context: .
-      dockerfile: Dockerfile_tracker
-    environment:
-      - MONGO_URL=mongodb://mongo:27017/social_analytics
-    env_file:
-      - .env
-    volumes:
-      - .:/home
-    depends_on:
-      - mongo
-  geocrawler:
-    build:
-      context: .
-      dockerfile: Dockerfile_geocrawler
-    environment:
-      - MONGO_URL=mongodb://mongo:27017/social_analytics
-    env_file:
-      - .env
-    volumes:
-      - .:/home
-    depends_on:
-      - mongo
-  sampler:
-    build:
-      context: .
-      dockerfile: Dockerfile_sampler
+    build: .
     environment:
       - MONGO_URL=mongodb://mongo:27017/social_analytics
     env_file:
