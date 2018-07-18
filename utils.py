@@ -1,3 +1,5 @@
+from datetime import datetime
+
 def expand_tweet(status):
     '''Given a tweepy Status object, expands the text of the tweet
     
@@ -44,6 +46,33 @@ def get_full_text(status):
     # original tweet, <= 140 characters
     else:
         return data['text']
+
+def reformat_tweet(status):
+    '''Given a status object from the Twitter API, reformat its date fields
+    
+    In particular, this function will convert the following raw string fields
+    sent by the Twitter API into actual datetime (and int) objects:
+    
+    - created_at
+    - user.created_at
+    - retweeted_status.created_at
+    - retweeted_status.user.created_at
+    - timestamp_ms
+    
+    By doing this, we are able to better support a wider range of database 
+    queries on date- and time-related fields
+    '''
+    data = status._json
+    datetime_fmt = "%a %b %d %H:%M:%S %z %Y"
+    
+    data['created_at'] = datetime.strptime(data['created_at'], datetime_fmt)
+    data['user']['created_at'] = datetime.strptime(data['user']['created_at'], datetime_fmt)
+    data['timestamp_ms'] = int(data['timestamp_ms'])
+
+    if is_retweet(status):
+        retweet = data['retweeted_status']
+        retweet['created_at'] = datetime.strptime(retweet['created_at'], datetime_fmt)
+        retweet['user']['created_at'] = datetime.strptime(retweet['user']['created_at'], datetime_fmt)
 
 def is_retweet(status):
     '''Given a tweepy Status object, returns whether or not it's a retweet'''
