@@ -1,5 +1,4 @@
 import sys
-from urllib3.exceptions import ProtocolError
 
 import tweepy
 
@@ -24,28 +23,21 @@ class TweetCrawler:
         if locations is None or len(locations) == 0:
             raise RuntimeError('You MUST specify at least one valid bounding box')
         
-        # automatically re-connect tweet crawler whenever it stalls
-        while True:
-            try:
-                # open up a SYNCHRONOUS connection to Twitter Streaming API
-                main_stream = tweepy.Stream(auth=self.auth,
-                                            listener=main_listener)
+        # open up a SYNCHRONOUS connection to Twitter Streaming API
+        main_stream = tweepy.Stream(auth=self.auth,
+                                    listener=main_listener)
                 
-                # connect to an IP proxy, if specified in the environment
-                proxy_ip = config.get('proxy_server')
-                if proxy_ip:
-                    main_stream.proxies = {
-                        'http': proxy_ip,
-                        'https': proxy_ip
-                    }
-                    
-                # start up the "filter" streaming crawler
-                main_stream.filter(locations=locations)
-                    
-            except ProtocolError:
-                # the client is beginning to stall, so re-connect it
-                continue
+        # connect to an IP proxy, if specified in the environment
+        proxy_ip = config.get('proxy_server')
+        if proxy_ip:
+            main_stream.proxies = {
+                'http': proxy_ip,
+                'https': proxy_ip
+            }
             
+        # start up the "filter" streaming crawler
+        main_stream.filter(locations=locations)
+        
     def crawl_tracks(self, tracks=None):
         '''Implements the core logic for crawling a stream of tweets.'''
         
@@ -56,53 +48,41 @@ class TweetCrawler:
         if tracks is None or len(tracks) == 0:
             raise RuntimeError('You MUST specify at least one streaming track')
         
-        # automatically re-connect tweet crawler whenever it stalls
-        while True:
-            try:
-                # open up a SYNCHRONOUS connection to Twitter Streaming API
-                main_stream = tweepy.Stream(auth=self.auth,
-                                            listener=main_listener)
-
-                # connect to an IP proxy, if specified in the environment
-                proxy_ip = config.get('proxy_server')
-                if proxy_ip:
-                    main_stream.proxies = {
-                        'http': proxy_ip,
-                        'https': proxy_ip
-                    }
-                    
-                # start up the "filter" streaming crawler
-                main_stream.filter(track=tracks)
-            except ProtocolError:
-                # the client is beginning to stall, so re-connect it
-                continue
-
+        # open up a SYNCHRONOUS connection to Twitter Streaming API
+        main_stream = tweepy.Stream(auth=self.auth,
+                                    listener=main_listener)
+        
+        # connect to an IP proxy, if specified in the environment
+        proxy_ip = config.get('proxy_server')
+        if proxy_ip:
+            main_stream.proxies = {
+                'http': proxy_ip,
+                'https': proxy_ip
+            }
+            
+        # start up the "filter" streaming crawler
+        main_stream.filter(track=tracks)
+        
     def crawl_sample(self, languages=None):
     
         main_listener = MongoDBListener(verbose=True)
         languages = languages or []
         
-        while True:
-            
-            try:
-                # create a stream object to connect with Twitter's Streaming API
-                main_stream = tweepy.Stream(auth=self.auth, listener=main_listener)
-                
-                # connect to an IP proxy, if specified in the environment
-                proxy_ip = config.get('proxy_server')
-                if proxy_ip:
-                    main_stream.proxies = {
-                        'http': proxy_ip,
-                        'https': proxy_ip
-                    }
-                
-                # start crawling all tweets in the given language(s)
-                # NOTE: This is a BLOCKING call!
-                main_stream.sample(languages=languages)
-                
-            except ProtocolError:
-                continue
-
+        # create a stream object to connect with Twitter's Streaming API
+        main_stream = tweepy.Stream(auth=self.auth, listener=main_listener)
+        
+        # connect to an IP proxy, if specified in the environment
+        proxy_ip = config.get('proxy_server')
+        if proxy_ip:
+            main_stream.proxies = {
+                'http': proxy_ip,
+                'https': proxy_ip
+            }
+        
+        # start crawling all tweets in the given language(s)
+        # NOTE: This is a BLOCKING call!
+        main_stream.sample(languages=languages)
+        
 def main():
     # authenticate the crawler to access the Twitter API
     auth = tweepy.OAuthHandler(config['consumer_key'],
