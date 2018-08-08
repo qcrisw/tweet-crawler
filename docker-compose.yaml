@@ -13,7 +13,7 @@ services:
     ports:
       - '6379:6379'
   rqworker:
-    image: gotocode/rqworker:latest
+    image: qcrisw/rqworker:latest
     environment:
       - PYTHONPATH=/home
       - MONGO_URL=mongodb://mongo:27017/social_analytics
@@ -22,7 +22,7 @@ services:
       - mongo
       - redis
   pycrawler:
-    image: gotocode/pycrawler:latest
+    image: qcrisw/pycrawler:latest
     environment:
       - PYTHONPATH=/home
       - MONGO_URL=mongodb://mongo:27017/social_analytics
