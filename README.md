@@ -1,13 +1,13 @@
 
 # Tweet Crawler
 
-Tweet Crawler is a command-line utility that automatically collects tweet data from the Twitter Streaming API. Using this program, you can collect data about specific user-defined topics on Twitter (e.g. "programming", "qatar", "world cup", etc.).
+Tweet Crawler is a command-line utility that automatically collects tweet data from the Twitter Streaming API. Using this program, you can collect data about specific user-defined topics on Twitter (e.g. "programming", "qatar", "world cup", etc.), tweets from specific locations (e.g. San Francisco, New York, etc.), or just listen to a sample of all the tweets in a given language (e.g. English, Arabic, etc.).
 
 In addition to displaying the collected tweets on the command-line, this utility also stores the JSON for these tweets within a database (MongoDB).
 
 ## Getting Started
 
-Building and running Tweet Crawler on your machine should be a pretty straightforward process. In order to do so, you first need to install suitable versions of Docker and Docker Compose.
+Installing  and running Tweet Crawler on your machine should be a pretty straightforward process. In order to do so, you first need to install suitable versions of Docker and Docker Compose.
 
 Making use of Docker (and Docker Compose) greatly simplifies the Tweet Crawler setup process and will make it easier for you to run this program on the platform of your choice.
 
@@ -50,7 +50,7 @@ cd tweet-crawler
 
 #### Configuration
 
-Before you can build Tweet Crawler, you need to provide valid credentials to access the Twitter API.
+Before you can run Tweet Crawler, you need to provide valid credentials to access the Twitter API.
 
 To setup these credentials, follow the [instructions here](https://www.slickremix.com/docs/how-to-get-api-keys-and-tokens-for-twitter/).
 
@@ -61,27 +61,64 @@ cp env-sample .env
 ```
 Edit the `.env` file by inserting your Twitter app credentials and save the file.
 
-
-Now, run the following command to build Tweet Crawler:
-```
-docker-compose build
-```
+Also, If you want to use the crawler with a proxy server, specify the proxy IP address within the `.env` file.
 
 #### Running Tweet Crawler
 
-Simply enter the following command at the terminal:
+##### Crawling tweets about specific topic(s)
 
 ```
-docker-compose run pycrawler <keyword1> <keyword2> ...
+docker-compose run pycrawler track <keyword1> <keyword2> ...
 ```
 
 ...where each `<keyword>` is a topic you're interested in streaming from Twitter.
+
+##### Crawling all tweets in a given language
+
+```
+docker-compose run pycrawler sample <language-code>
+```
+
+...where `<language-code>` is an *optional* value drawn from the list of [Twitter - Supported Languages](https://developer.twitter.com/en/docs/twitter-for-websites/twitter-for-websites-supported-languages/overview.html).
+
+If you leave this field empty, the crawler will sample *all* tweets posted on Twitter.
+
+##### Crawling tweets in the given area(s)
+
+```
+docker-compose run pycrawler geo <bound-box-1> <bound-box-2> ...
+```
+
+...where each `<bound-box>` is a space-separated list of coordinates specified in the following order:
+
+1. longitude of left edge
+2. latitude of bottom edge
+3. longitude of right edge
+4. latitude of top edge
+
+For example, the following will crawl all tweets from the United States (minus Alaska & Hawaii):
+
+```
+docker-compose run pycrawler geo -125.2 25.6 -66.9 49.6
+```
+
+In addition to a single area, it's possible to crawl tweets from multiple, disjoint areas by specifying multiple bounding boxes.
+
+For example, the following will crawl all tweets from South Korea and the United States (minus Alaska & Hawaii):
+
+```
+docker-compose run pycrawler geo 123.7 32.7 131.1 39.0 -125.2 25.6 -66.9 49.6
+```
+
+For best results, you can use a tool like [BoundingBox](https://boundingbox.klokantech.com/), with output mode set to CSV, to fine-tune the selected bounding box.
 
 ## Built With
 
 * [Tweepy](http://www.tweepy.org/) - Twitter SDK for Python
 * [PyMongo](https://api.mongodb.com/python/current/) - Python driver for MongoDB
-* [MongoDB](https://www.mongodb.com/) - Database for storing tweets
+* [MongoDB](https://www.mongodb.com/) - Database for long-term storage of tweets
+* [RQ](http://python-rq.org/) - Python-based Redis Queue library
+* [Redis](https://redis.io/) - In-memory DB for storing tweets
 
 ## License
 
