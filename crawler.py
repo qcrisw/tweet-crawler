@@ -34,10 +34,15 @@ class TweetCrawler:
                 'http': proxy_ip,
                 'https': proxy_ip
             }
-            
-        # start up the "filter" streaming crawler
-        main_stream.filter(locations=locations)
-        
+
+        try:
+            # start up the "filter" streaming crawler
+            main_stream.filter(locations=locations)
+        except KeyboardInterrupt as exc:
+            # gracefully handle Ctrl^C exit
+            main_listener.on_exception(exc)
+            print('\nStopped tweet crawler for bounding box: {}'.format(locations))
+    
     def crawl_tracks(self, tracks=None):
         '''Implements the core logic for crawling a stream of tweets.'''
         
@@ -60,8 +65,13 @@ class TweetCrawler:
                 'https': proxy_ip
             }
             
-        # start up the "filter" streaming crawler
-        main_stream.filter(track=tracks)
+        try:
+            # start up the "filter" streaming crawler
+            main_stream.filter(track=tracks)
+        except KeyboardInterrupt as exc:
+            # gracefully handle Ctrl^C exit
+            main_listener.on_exception(exc)
+            print("\nStopped tweet crawler for: '{}'".format(' OR '.join(tracks)))
         
     def crawl_sample(self, languages=None):
     
@@ -81,8 +91,13 @@ class TweetCrawler:
         
         # start crawling all tweets in the given language(s)
         # NOTE: This is a BLOCKING call!
-        main_stream.sample(languages=languages)
-        
+        try:
+            main_stream.sample(languages=languages)
+        except KeyboardInterrupt as exc:
+            # gracefully handle Ctrl^C exit
+            main_listener.on_exception(exc)
+            print('\nStopped tweet sampler for tweets in languages: {}'.format(langs))
+            
 def main():
     # authenticate the crawler to access the Twitter API
     auth = tweepy.OAuthHandler(config['consumer_key'],
@@ -108,14 +123,9 @@ def main():
         # list of topics to track (topic1 OR topic2 OR ... OR topicN)
         tracks = args[1:]
         print('Using proxy server at {}'.format(config.get('proxy_server')))
-        print("Listening for Twitter stream about '{}'...".format(' OR '.join(tracks)))
-        sys.stdout.flush()
+        print("Listening for Twitter stream about '{}'...".format(' OR '.join(tracks)), flush=True)
         
-        # gracefully handle Ctrl^C exit from tweet crawling process
-        try:
-            crawler.crawl_tracks(tracks)
-        except KeyboardInterrupt:
-            print("\nStopped tweet crawler for: '{}'".format(' OR '.join(tracks)))
+        crawler.crawl_tracks(tracks)
         
     elif crawler_mode == 'geo':
 
@@ -124,14 +134,9 @@ def main():
         #                top-right-lon, top-right-lat, ...]
         locations = list(map(float, args[1:]))
         print('Using proxy server at {}'.format(config.get('proxy_server')))
-        print("Listening for Tweets within bounding box: {}...".format(locations))
-        sys.stdout.flush()
+        print("Listening for Tweets within bounding box: {}...".format(locations), flush=True)
         
-        # gracefully handle Ctrl^C exit from tweet crawling process
-        try:
-            crawler.crawl_geolocations(locations)
-        except KeyboardInterrupt:
-            print('\nStopped tweet crawler for bounding box: {}'.format(locations))
+        crawler.crawl_geolocations(locations)
         
     elif crawler_mode == 'sample':
         
@@ -139,12 +144,8 @@ def main():
         print('Using proxy server at {}'.format(config.get('proxy_server')))
         print('Listening for random sample of tweets in languages: {}'.format(langs), flush=True)
         
-        # gracefully handle Ctrl^C exit from tweet sampling process
-        try:
-            crawler.crawl_sample(languages=langs)
-        except KeyboardInterrupt:
-            print('\nStopped tweet sampler for tweets in languages: {}'.format(langs))
-        
+        crawler.crawl_sample(languages=langs)
+    
     else:
 
         raise RuntimeError('Invalid crawler mode specified: {}'.format(crawler_mode))
