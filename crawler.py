@@ -96,7 +96,7 @@ class TweetCrawler:
         except KeyboardInterrupt as exc:
             # gracefully handle Ctrl^C exit
             main_listener.on_exception(exc)
-            print('\nStopped tweet sampler for tweets in languages: {}'.format(langs))
+            print('\nStopped tweet sampler for tweets in languages: {}'.format(languages))
             
 def main():
     # authenticate the crawler to access the Twitter API
