@@ -23,6 +23,7 @@ services:
       - redis
   pycrawler:
     image: qcrisw/pycrawler:latest
+    restart: on-failure
     environment:
       - PYTHONPATH=/home
       - MONGO_URL=mongodb://mongo:27017/social_analytics
