@@ -1,4 +1,5 @@
 
+
 # Tweet Crawler
 
 Tweet Crawler is a command-line utility that automatically collects tweet data from the Twitter Streaming API. Using this program, you can collect data about specific user-defined topics on Twitter (e.g. "programming", "qatar", "world cup", etc.), tweets from specific locations (e.g. San Francisco, New York, etc.), or just listen to a sample of all the tweets in a given language (e.g. English, Arabic, etc.).
@@ -111,6 +112,109 @@ docker-compose run pycrawler geo 123.7 32.7 131.1 39.0 -125.2 25.6 -66.9 49.6
 ```
 
 For best results, you can use a tool like [BoundingBox](https://boundingbox.klokantech.com/), with output mode set to CSV, to fine-tune the selected bounding box.
+
+## Contributing to the Codebase
+
+If you are only interested in _using_ Tweet Crawler, then you can simply ignore this section.
+
+However, if you would like to modify the source code and/or contribute to the project, reading this section is essential to building the source code on your development machine.
+
+### Development process
+
+At a high level, the Tweet Crawler development process consists of three main steps, which are repeated many times:
+
+ 1. Update the source code with new changes
+ 2. Build Docker images for the updated version of project
+ 3. Run project to test updated codebase
+
+The source code can be updated using any IDE or editor of your choice.
+
+We've already covered how to _run_ Tweet crawler in the [Running the Tweet Crawler](https://github.com/qcrisw/tweet-crawler#running-tweet-crawler) section.
+
+As such, we will only give detailed instructions on how to _build_ the Docker images required to run a development version of the Tweet Crawler.
+
+### Build process
+
+ 1. Add the`build` key to the `pycrawler` service in `docker-compose.yaml`
+```
+pycrawler:
+  build: .
+  image: qcrisw/pycrawler:latest
+  <rest of service definition>
+```
+ 2. Update the `image` key for the `pycrawler` service in `docker-compose.yaml`
+```
+pycrawler:
+  build: .
+  image: <your-org-name-here>/pycrawler:latest
+  <rest of service definition>
+```
+ 3. Clone the [`qcrisw/task-worker`](https://github.com/qcrisw/task-worker) repository
+```
+git clone https://github.com/qcrisw/task-worker.git
+```
+ 4. Add the `build` key to the `rqworker` service in `docker-compose.yaml`
+```
+rqworker:
+  build: ./task-worker
+  image: qcrisw/rqworker:latest
+  <rest of service definition>
+```
+ 5. Update the `image` key for the `rqworker` service in `docker-compose.yaml`
+```
+rqworker:
+  build: ./task-worker
+  image: <your-org-name-here>/rqworker:latest
+  <rest of service definition>
+```
+ 6. Run `docker-compose build` from the project directory
+ 7. Wait until the build process is complete
+
+At this point, you can run the Tweet Crawler project using the newly built Docker images, as outlined in the [Running the Tweet Crawler](https://github.com/qcrisw/tweet-crawler#running-tweet-crawler) section.
+
+If you want to re-build the project after updating the source code, simply re-run the `docker-compose build` command from the main project directory.
+
+### Development FAQs
+
+* How do I add new types of tasks to the message queue?
+  1. Define a new task function in the `mq/tasks.py` file
+  2. Add any new dependencies to `requirements.txt`
+  3. Run `cp mq/tasks.py task-worker/mq/tasks.py` from the main project directory
+  4. Run `cp requirements.txt task-worker/requirements.txt` from the main project directory
+
+ * Why does Docker still run my old code even after I update the source code?
+    * By default, running `docker-compose run` will **not** build the newly updated Docker images
+    * In order to run the updated code, you need to run `docker-compose build` followed by `docker-compose run`
+
+* Where can I find the collected tweet data?
+  * The collected tweet data is stored as a set of "daily collections" named using "Year_Month_Day" format (UTC) in MongoDB
+  * To access the tweet objects stored in these collections, use the following steps:
+    1. Run `docker-compose ps` to see the full list of running containers
+    2. Find the name of the running `mongo` container (e.g. `tweet-crawler_mongo_1`)
+    3. Run `docker exec -it <name-of-mongo-container> bash`, followed by `mongo social-analytics`
+    4. You can use the [Mongo Shell Command Reference](https://docs.mongodb.com/manual/reference/mongo-shell/) to query & access the data contained in MongoDB
+
+* How can I export the raw data outside MongoDB?
+    1. Run `docker-compose ps` to see the full list of running containers on the host machine
+    2. Find the name of the running `mongo` container (e.g. `tweet-crawler_mongo_1`)
+    3. Run `docker exec -it <name-of-mongo-container> bash`
+    4. Run `mongoexport --db=social_analytics --collection=<daily-collection-name> --out=<output-file-name>`
+    5. Wait until the export process is completed
+    6. `exit` from the `rqworker` container
+    7. From the host machine, run `docker container cp tweet-crawler_mongo_1:<output-file-name> <output-file-name>`
+    8. At this point, a dump of the raw tweet data is present on your host machine with the given `<output-file-name>`
+
+* How can I start up MongoDB without starting up the crawler?
+  1. To stop all running containers in the Tweet Crawler project, run `docker-compose down`
+  2. To start up only MongoDB, run `docker-compose run --detach mongo`
+
+* Why can't I see the logs of `rqworker` containers using `docker logs`?
+  * Due to certain implementation issues, the logs of each `rqworker` are not accessible via `docker logs`
+  * However, you can still access the `rqworker` logs using the following steps:
+    1. Run `docker-compose ps` to list all running containers
+    2. Find the name of a running `rqworker` container (e.g. `tweet-crawler_rqworker_1`)
+    3. Run `docker exec -it <name-of-rqworker-container> bash`
+    4. Run `cat logs.txt` to view the logs generated by the worker
 
 ## Built With
 
